@@ -66,13 +66,15 @@ async function deleteTask(id) {
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
   const title = input.value.trim();
+  const fecha_limite = dueDateInput.value; // Assuming you have an input with id "due-date-input" for the due date
   if (!title) return;
   await fetch(API, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ title }),
+    body: JSON.stringify({ title, fecha_limite }),
   });
   input.value = '';
+  dueDateInput.value = ''; // Clear the due date input after submission
   loadTasks();
 });
 
