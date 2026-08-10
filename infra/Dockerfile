@@ -3,12 +3,11 @@ FROM node:22-slim
 
 WORKDIR /app
 
-# Copiamos primero package*.json para aprovechar la caché de capas de Docker
 COPY backend/package*.json ./backend/
 RUN cd backend && npm install --omit=dev
 
-# Copiamos el resto del proyecto (backend, frontend y migraciones)
-COPY backend ./backend
+COPY backend/server.js ./backend/server.js
+COPY backend/db.js ./backend/db.js
 COPY frontend ./frontend
 COPY migrations ./migrations
 
