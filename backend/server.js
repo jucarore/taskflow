@@ -27,13 +27,13 @@ app.get('/api/tasks', (req, res) => {
 
 // --- Crear tarea ---
 app.post('/api/tasks', (req, res) => {
-  const { title } = req.body;
+  const { title, fecha_limite } = req.body;
   if (!title || typeof title !== 'string' || !title.trim()) {
     return res.status(400).json({ error: 'El campo "title" es requerido.' });
   }
   const result = db
-    .prepare('INSERT INTO tasks (title) VALUES (?)')
-    .run(title.trim());
+    .prepare('INSERT INTO tasks (title, fecha_limite) VALUES (?,?)')
+    .run(title.trim(),fecha_limite || null);
   const task = db
     .prepare('SELECT * FROM tasks WHERE id = ?')
     .get(result.lastInsertRowid);
@@ -47,12 +47,14 @@ app.put('/api/tasks/:id', (req, res) => {
   if (!existing) return res.status(404).json({ error: 'Tarea no encontrada.' });
 
   const title = req.body.title ?? existing.title;
+  const fecha_limite = req.body.fecha_limite ?? existing.fecha_limite;
   const completed =
     req.body.completed !== undefined ? (req.body.completed ? 1 : 0) : existing.completed;
 
-  db.prepare('UPDATE tasks SET title = ?, completed = ? WHERE id = ?').run(
+  db.prepare('UPDATE tasks SET title = ?, completed = ?, fecha_limite = ? WHERE id = ?').run(
     title,
     completed,
+    fecha_limite,
     id
   );
   const updated = db.prepare('SELECT * FROM tasks WHERE id = ?').get(id);
